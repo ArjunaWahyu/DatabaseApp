@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -21,10 +22,12 @@ public interface RuanganDAO {
     @Insert
     void insertRuangan(Ruangan ruangan);
 
+    @Update
+    void updateRuangan(Ruangan ruangan);
+
     @Delete
     void delete(Ruangan ruangan);
 
-//    add deleteByGedung
     @Query("DELETE FROM Ruangan WHERE namaGedung = :namaGedung")
     void deleteByGedung(String namaGedung);
 

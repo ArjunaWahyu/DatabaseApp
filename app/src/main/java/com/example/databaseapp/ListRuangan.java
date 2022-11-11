@@ -49,7 +49,7 @@ public class ListRuangan extends AppCompatActivity {
     private void setRvRuangan(List<Ruangan> ruangans) {
         ruanganAdapter = new RuanganAdapter(ruangans,
                 position -> {
-                    Toast.makeText(this, "EDIT" + ruangans.get(position).getNamaRuang(), Toast.LENGTH_SHORT).show();
+                    editRuangan(ruangans.get(position));
                 },
                 position -> {
                     deleteRuangan(ruangans.get(position));
@@ -58,6 +58,14 @@ public class ListRuangan extends AppCompatActivity {
                 });
         rvRuangan.setAdapter(ruanganAdapter);
         rvRuangan.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void editRuangan(Ruangan ruangan) {
+        Intent intent = new Intent(ListRuangan.this, EditRuanganActivity.class);
+        intent.putExtra("namaRuangan", ruangan.getNamaRuang());
+        intent.putExtra("kapasitas", ruangan.getKapasitas());
+        intent.putExtra("namaGedung", namaGedung);
+        startActivity(intent);
     }
 
     private void getAllRuangan(String namaGedung) {
