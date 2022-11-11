@@ -24,6 +24,10 @@ public interface RuanganDAO {
     @Delete
     void delete(Ruangan ruangan);
 
+//    add deleteByGedung
+    @Query("DELETE FROM Ruangan WHERE namaGedung = :namaGedung")
+    void deleteByGedung(String namaGedung);
+
     @Query("DELETE FROM Ruangan")
     void deleteAllRuangan();
 }

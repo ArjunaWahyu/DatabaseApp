@@ -1,24 +1,16 @@
 package com.example.databaseapp;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.example.databaseapp.adapter.GedungAdapter;
 import com.example.databaseapp.entity.AppDatabase;
 import com.example.databaseapp.entity.Gedung;
-import com.example.databaseapp.entity.Ruangan;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 },
                 position -> {
                     deleteGedung(gedungs.get(position));
+                    gedungs.remove(position);
+                    setRvGedung(gedungs);
                 });
         rvGedung.setAdapter(gedungAdapter);
         rvGedung.setLayoutManager(new LinearLayoutManager(this));
@@ -75,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 setRvGedung(gedungs);
             });
 
-            AsyncTask.Status status = AsyncTask.Status.FINISHED;
         });
     }
 
     private void deleteGedung(Gedung gedung) {
         AsyncTask.execute(() -> {
             appDatabase.gedungDAO().delete(gedung);
+            appDatabase.ruanganDAO().deleteByGedung(gedung.getNamaGedung());
         });
     }
 }

@@ -44,8 +44,8 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
         String namaRuangan = ruangans.get(position).getNamaRuang();
 
         holder.tvNamaRuangan.setText(namaRuangan);
-        holder.ivEdit.setOnClickListener(v -> deleteClickListerner.onClick(position));
-        holder.ivDelete.setOnClickListener(v -> editClickListerner.onClick(position));
+        holder.ivEdit.setOnClickListener(v -> editClickListerner.onClick(position));
+        holder.ivDelete.setOnClickListener(v -> deleteClickListerner.onClick(position));
     }
 
     @Override

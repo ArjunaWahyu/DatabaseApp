@@ -3,22 +3,15 @@ package com.example.databaseapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
-
-import com.example.databaseapp.adapter.GedungAdapter;
 import com.example.databaseapp.adapter.RuanganAdapter;
 import com.example.databaseapp.entity.AppDatabase;
-import com.example.databaseapp.entity.Gedung;
 import com.example.databaseapp.entity.Ruangan;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +19,7 @@ public class ListRuangan extends AppCompatActivity {
     private RecyclerView rvRuangan;
     private FloatingActionButton btnAddRuangan;
     private AppDatabase appDatabase;
+    private RuanganAdapter ruanganAdapter;
     private String namaGedung;
 
     @Override
@@ -53,20 +47,17 @@ public class ListRuangan extends AppCompatActivity {
     }
 
     private void setRvRuangan(List<Ruangan> ruangans) {
-        if (!ruangans.isEmpty()) {
-            RuanganAdapter ruanganAdapter = new RuanganAdapter(ruangans,
-                    position -> {
-                        Toast.makeText(this, "EDIT" + ruangans.get(position).getNamaRuang(), Toast.LENGTH_SHORT).show();
-                    },
-                    position -> {
-                        deleteRuangan(ruangans.get(position));
-                    });
-            rvRuangan.setAdapter(ruanganAdapter);
-            rvRuangan.setLayoutManager(new LinearLayoutManager(this));
-            Toast.makeText(this, ruangans.get(0).getNamaRuang(), Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Data Ruangan Kosong", Toast.LENGTH_SHORT).show();
-        }
+        ruanganAdapter = new RuanganAdapter(ruangans,
+                position -> {
+                    Toast.makeText(this, "EDIT" + ruangans.get(position).getNamaRuang(), Toast.LENGTH_SHORT).show();
+                },
+                position -> {
+                    deleteRuangan(ruangans.get(position));
+                    ruangans.remove(position);
+                    setRvRuangan(ruangans);
+                });
+        rvRuangan.setAdapter(ruanganAdapter);
+        rvRuangan.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void getAllRuangan(String namaGedung) {
@@ -74,10 +65,11 @@ public class ListRuangan extends AppCompatActivity {
         AsyncTask.execute(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ruangans.addAll(appDatabase.ruanganDAO().getAllRuanganByNamaGedung(namaGedung));
-//                add uithread
+
                 runOnUiThread(() -> {
                     setRvRuangan(ruangans);
                 });
+
             }
         });
     }
