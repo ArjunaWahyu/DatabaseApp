@@ -25,7 +25,6 @@ import java.util.List;
 public class ListRuangan extends AppCompatActivity {
     private RecyclerView rvRuangan;
     private FloatingActionButton btnAddRuangan;
-    private List<Ruangan> ruangans;
     private AppDatabase appDatabase;
     private String namaGedung;
 
@@ -36,12 +35,9 @@ public class ListRuangan extends AppCompatActivity {
 
         rvRuangan = findViewById(R.id.rvRuangan);
         btnAddRuangan = findViewById(R.id.btnAddRuangan);
-//        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "Database").build();
         appDatabase = AppDatabase.getDatabase(getApplicationContext());
-//        setRvRuangan();
 
         namaGedung = getIntent().getStringExtra("namaGedung");
-        Toast.makeText(this, "ListRuangan : "+namaGedung, Toast.LENGTH_SHORT).show();
 
         btnAddRuangan.setOnClickListener(v -> {
             Intent intent = new Intent(ListRuangan.this, AddRuanganActivity.class);
@@ -53,40 +49,37 @@ public class ListRuangan extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setRvRuangan();
+        getAllRuangan(namaGedung);
     }
 
-    private void setRvRuangan() {
-        List<Ruangan> ruangans = getAllRuangan(namaGedung);
-//        Toast.makeText(this, ruangans.toString(), Toast.LENGTH_SHORT).show();
-//        rvRuangan.setAdapter(new RuanganAdapter(ruangans,
-//                position -> {
-//                    Intent intent = new Intent(ListRuangan.this, AddRuanganActivity.class);
-//                    intent.putExtra("namaRuangan", ruangans.get(position).getNamaRuang());
-//                    startActivity(intent);
-//                },
-//                position -> {
-//                    deleteRuangan(ruangans.get(position));
-//                    setRvRuangan();
-//                },
-//                position -> {
-//                    Intent intent = new Intent(ListRuangan.this, ListRuangan.class);
-//                    intent.putExtra("namaGedung", ruangans.get(position).getNamaGedung());
-//                    startActivity(intent);
-//                })
-//        );
-//        rvRuangan.setLayoutManager(new LinearLayoutManager(this));
+    private void setRvRuangan(List<Ruangan> ruangans) {
+        if (!ruangans.isEmpty()) {
+            RuanganAdapter ruanganAdapter = new RuanganAdapter(ruangans,
+                    position -> {
+                        Toast.makeText(this, "EDIT" + ruangans.get(position).getNamaRuang(), Toast.LENGTH_SHORT).show();
+                    },
+                    position -> {
+                        deleteRuangan(ruangans.get(position));
+                    });
+            rvRuangan.setAdapter(ruanganAdapter);
+            rvRuangan.setLayoutManager(new LinearLayoutManager(this));
+            Toast.makeText(this, ruangans.get(0).getNamaRuang(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Data Ruangan Kosong", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private List<Ruangan> getAllRuangan(String namaGedung) {
-        List<Ruangan> ruanganList = new ArrayList<>();
+    private void getAllRuangan(String namaGedung) {
+        List<Ruangan> ruangans = new ArrayList<>();
         AsyncTask.execute(() -> {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                ruanganList.addAll(appDatabase.ruanganDAO().getAllRuangan());
-                Toast.makeText(getApplicationContext(), ruanganList.toString(), Toast.LENGTH_SHORT).show();
-//            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                ruangans.addAll(appDatabase.ruanganDAO().getAllRuanganByNamaGedung(namaGedung));
+//                add uithread
+                runOnUiThread(() -> {
+                    setRvRuangan(ruangans);
+                });
+            }
         });
-        return ruanganList;
     }
 
     private void deleteRuangan(Ruangan ruangan) {

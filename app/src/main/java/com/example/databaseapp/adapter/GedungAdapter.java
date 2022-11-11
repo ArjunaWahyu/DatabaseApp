@@ -61,6 +61,7 @@ public class GedungAdapter extends RecyclerView.Adapter<GedungAdapter.ViewHolder
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             tvNamaGedung = itemView.findViewById(R.id.tvNamaGedung);
             ivDelete = itemView.findViewById(R.id.ivDelete);
         }

@@ -11,22 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.databaseapp.R;
-import com.example.databaseapp.entity.Gedung;
 import com.example.databaseapp.entity.Ruangan;
 
 import java.util.List;
 
 public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHolder> {
     private List<Ruangan> ruangans;
-    private OnClickListerner onClickListerner;
-    private OnClickListerner onClickListerner2;
-    private OnClickListerner onClickListerner3;
+    private OnClickListerner editClickListerner;
+    private OnClickListerner deleteClickListerner;
 
-    public RuanganAdapter(List<Ruangan> ruangans, OnClickListerner onClickListerner, OnClickListerner onClickListerner2, OnClickListerner onClickListerner3) {
+    public RuanganAdapter(List<Ruangan> ruangans, OnClickListerner editClickListerner, OnClickListerner deleteClickListerner) {
         this.ruangans = ruangans;
-        this.onClickListerner = onClickListerner;
-        this.onClickListerner2 = onClickListerner2;
-        this.onClickListerner3 = onClickListerner3;
+        this.editClickListerner = editClickListerner;
+        this.deleteClickListerner = deleteClickListerner;
     }
 
     @NonNull
@@ -47,14 +44,13 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
         String namaRuangan = ruangans.get(position).getNamaRuang();
 
         holder.tvNamaRuangan.setText(namaRuangan);
-        holder.ivEdit.setOnClickListener(v -> onClickListerner3.onClick(position));
-        holder.ivDelete.setOnClickListener(v -> onClickListerner2.onClick(position));
-        holder.itemView.setOnClickListener(v -> onClickListerner.onClick(position));
+        holder.ivEdit.setOnClickListener(v -> deleteClickListerner.onClick(position));
+        holder.ivDelete.setOnClickListener(v -> editClickListerner.onClick(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return ruangans.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -12,7 +12,6 @@ public interface RuanganDAO {
     @Query("SELECT * FROM Ruangan")
     List<Ruangan> getAllRuangan();
 
-//    get all ruangan by nama gedung
     @Query("SELECT * FROM Ruangan WHERE namaGedung = :namaGedung")
     List<Ruangan> getAllRuanganByNamaGedung(String namaGedung);
 

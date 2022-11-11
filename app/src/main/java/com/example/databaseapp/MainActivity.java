@@ -1,9 +1,10 @@
 package com.example.databaseapp;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.example.databaseapp.adapter.GedungAdapter;
 import com.example.databaseapp.entity.AppDatabase;
 import com.example.databaseapp.entity.Gedung;
+import com.example.databaseapp.entity.Ruangan;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private RecyclerView rvGedung;
     private FloatingActionButton btnAddGedung;
-    private List<Gedung> gedungs;
     private AppDatabase appDatabase;
     private GedungAdapter gedungAdapter;
 
@@ -34,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
         rvGedung = findViewById(R.id.rvGedung);
         btnAddGedung = findViewById(R.id.btnAddGedung);
-//        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "Database").build();
         appDatabase = AppDatabase.getDatabase(getApplicationContext());
 
         btnAddGedung.setOnClickListener(v -> {
@@ -46,33 +46,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setRvGedung();
+        getAllGedung();
     }
 
-    private void setRvGedung() {
-        gedungs = getAllGedung();
-        gedungAdapter = new GedungAdapter(gedungs, position -> {
-            Intent intent = new Intent(MainActivity.this, ListRuangan.class);
-            intent.putExtra("namaGedung", gedungs.get(position).getNamaGedung());
-            startActivity(intent);
-        }, position -> {
-            deleteGedung(gedungs.get(position));
-            setRvGedung();
-        });
+    private void setRvGedung(List<Gedung> gedungs) {
+        gedungAdapter = new GedungAdapter(gedungs,
+                position -> {
+                    Intent intent = new Intent(MainActivity.this, ListRuangan.class);
+                    intent.putExtra("namaGedung", gedungs.get(position).getNamaGedung());
+                    startActivity(intent);
+                },
+                position -> {
+                    deleteGedung(gedungs.get(position));
+                });
         rvGedung.setAdapter(gedungAdapter);
         rvGedung.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    public List<Gedung> getAllGedung() {
+    public void getAllGedung() {
         List<Gedung> gedungs = new ArrayList<>();
 
         AsyncTask.execute(() -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 gedungs.addAll(appDatabase.gedungDAO().getAllGedung());
             }
-        });
 
-        return gedungs;
+            runOnUiThread(() -> {
+                setRvGedung(gedungs);
+            });
+
+            AsyncTask.Status status = AsyncTask.Status.FINISHED;
+        });
     }
 
     private void deleteGedung(Gedung gedung) {
