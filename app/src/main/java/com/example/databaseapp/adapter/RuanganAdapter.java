@@ -17,13 +17,11 @@ import java.util.List;
 
 public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHolder> {
     private List<Ruangan> ruangans;
-    private OnClickListerner editClickListerner;
-    private OnClickListerner deleteClickListerner;
+    private OnClickListerner menuClickListerner;
 
-    public RuanganAdapter(List<Ruangan> ruangans, OnClickListerner editClickListerner, OnClickListerner deleteClickListerner) {
+    public RuanganAdapter(List<Ruangan> ruangans, OnClickListerner menuClickListerner) {
         this.ruangans = ruangans;
-        this.editClickListerner = editClickListerner;
-        this.deleteClickListerner = deleteClickListerner;
+        this.menuClickListerner = menuClickListerner;
     }
 
     @NonNull
@@ -42,10 +40,11 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String namaRuangan = ruangans.get(position).getNamaRuang();
+        int kapasitas = ruangans.get(position).getKapasitas();
 
         holder.tvNamaRuangan.setText(namaRuangan);
-        holder.ivEdit.setOnClickListener(v -> editClickListerner.onClick(position));
-        holder.ivDelete.setOnClickListener(v -> deleteClickListerner.onClick(position));
+        holder.tvKapasitas.setText(String.valueOf(kapasitas));
+        holder.ivMenu.setOnClickListener(v -> menuClickListerner.onClick(position, v));
     }
 
     @Override
@@ -55,19 +54,19 @@ public class RuanganAdapter extends RecyclerView.Adapter<RuanganAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNamaRuangan;
-        private ImageView ivEdit;
-        private ImageView ivDelete;
+        private TextView tvKapasitas;
+        private ImageView ivMenu;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvNamaRuangan = itemView.findViewById(R.id.tvNamaRuangan);
-            ivEdit = itemView.findViewById(R.id.ivEdit);
-            ivDelete = itemView.findViewById(R.id.ivDelete);
+            tvKapasitas = itemView.findViewById(R.id.tvKapasitas);
+            ivMenu = itemView.findViewById(R.id.ivMenu);
         }
     }
 
     public interface OnClickListerner {
-        void onClick(int position);
+        void onClick(int position, View view);
     }
 }

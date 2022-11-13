@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 import com.example.databaseapp.adapter.RuanganAdapter;
 import com.example.databaseapp.entity.AppDatabase;
@@ -48,13 +49,25 @@ public class ListRuangan extends AppCompatActivity {
 
     private void setRvRuangan(List<Ruangan> ruangans) {
         ruanganAdapter = new RuanganAdapter(ruangans,
-                position -> {
-                    editRuangan(ruangans.get(position));
-                },
-                position -> {
-                    deleteRuangan(ruangans.get(position));
-                    ruangans.remove(position);
-                    setRvRuangan(ruangans);
+                (position, view) -> {
+                    PopupMenu popupMenu = new PopupMenu(this, view);
+                    popupMenu.getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(item -> {
+                        switch (item.getItemId()) {
+                            case R.id.ivEdit:
+                                Toast.makeText(this, "Edit", Toast.LENGTH_SHORT).show();
+                                editRuangan(ruangans.get(position));
+                                break;
+                            case R.id.ivDelete:
+                                Toast.makeText(this, "Delete", Toast.LENGTH_SHORT).show();
+                                deleteRuangan(ruangans.get(position));
+                                ruangans.remove(position);
+                                setRvRuangan(ruangans);
+                                break;
+                        }
+                        return false;
+                    });
+                    popupMenu.show();
                 });
         rvRuangan.setAdapter(ruanganAdapter);
         rvRuangan.setLayoutManager(new LinearLayoutManager(this));
